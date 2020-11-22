@@ -22,7 +22,7 @@ class Map:
             for i in range(self.nodes_num):
                 plt.plot(self.x_nodes[i:i+2], self.y_nodes[i:i+2], 'bo-')
             # return back to original node
-            plt.plot([self.x_nodes[-1],self.x_nodes[0]],[self.y_nodes[-1:],self.y_nodes[0]], 'bo-')
+            plt.plot([self.x_nodes[-1],self.x_nodes[0]],[self.y_nodes[-1],self.y_nodes[0]], 'bo-')
 
             if cost and temp:
             # visualize the total cost 
@@ -44,12 +44,12 @@ class SimulatedAnnealing:
     def anneal(self):
         curr_permutation = np.hstack([self.map.x_nodes, self.map.y_nodes])
         costs = []
+        candidate_maps = []
+        curr_cost = self.cost(curr_permutation)
+
         for _ in range(self.max_iter):
             
-            curr_cost = self.cost(curr_permutation)
-            
             new_permutation = self.create_neighbour_path(curr_permutation)
-
             new_cost = self.cost(new_permutation)
 
             if new_cost < curr_cost:
@@ -67,11 +67,14 @@ class SimulatedAnnealing:
             self.map.visualize(curr_cost, self.temp)
 
             costs.append(curr_cost)
+            candidate_maps.append(self.map)
             self.temp *= self.rate 
+
+        return costs, candidate_maps
 
     def acceptance_prob(self, curr_cost, new_cost):
         # calculates the acceptance probability 
-        return np.exp(-np.abs(curr_cost - new_cost) / self.temp)
+        return np.exp(-np.abs(new_cost - curr_cost) / self.temp)
 
     @staticmethod
     def create_neighbour_path(curr_permutation, visualize=False):
@@ -80,7 +83,7 @@ class SimulatedAnnealing:
         idx_2 = np.random.randint(1,len(curr_permutation))
 
         while (idx_1 == idx_2): 
-            idx_2 = np.random.randint(len(curr_permutation))
+            idx_2 = np.random.randint(1,len(curr_permutation))
 
         new_permutation = curr_permutation.copy()
         new_permutation[[idx_1, idx_2]] = new_permutation[[idx_2, idx_1]]
