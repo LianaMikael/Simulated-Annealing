@@ -2,18 +2,89 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 class Map:
+    # creates a random map of cities
+    # the first node is assumed to be the origin
+    # the order of nodes assumes the initial randomly chosen path 
     def __init__(self, width, height, nodes_num):
         self.width = width
         self.height = height
         self.nodes_num = nodes_num 
 
-        self.x_nodes = np.random.rand(self.nodes_num) * self.width
-        self.y_nodes = np.random.rand(self.nodes_num) * self.height
+        self.x_nodes = np.random.rand(self.nodes_num,1) * self.width
+        self.y_nodes = np.random.rand(self.nodes_num,1) * self.height
 
-    def visualize(self):
+    def visualize(self, show_path=True):
         plt.title('Map')
         plt.xlim(0,self.width)
         plt.ylim(0,self.height)
-        plt.plot(self.x_nodes, self.y_nodes, '.')
+
+        if show_path:
+            for i in range(self.nodes_num):
+                plt.plot(self.x_nodes[i:i+2], self.y_nodes[i:i+2], 'bo-')
+            # return back to original node
+            plt.plot([self.x_nodes[-1],self.x_nodes[0]],[self.y_nodes[-1:],self.y_nodes[0]], 'bo-')
+
+        plt.plot(self.x_nodes[0], self.y_nodes[0], 'o', color='r')
+        plt.plot(self.x_nodes[1:], self.y_nodes[1:], '.')
+
         plt.show()
     
+class SimulatedAnnealing:
+    def __init__(self, TSP_map, temp, rate, max_iter):
+        self.map = TSP_map
+        self.temp = temp
+        self.rate = rate
+        self.max_iter = max_iter 
+
+    def anneal(self):
+        curr_permutation = np.hstack([self.map.x_nodes, self.map.y_nodes])
+
+        for i in range(self.max_iter):
+            print(curr_permutation)
+            curr_cost = self.cost(curr_permutation)
+            
+            new_permutation = self.create_neighbour_path(curr_permutation)
+
+            new_cost = self.cost(new_permutation)
+
+            if new_cost < curr_cost:
+                curr_permutation = new_permutation
+                curr_cost = new_cost
+                
+            elif np.random.random() < self.acceptance_prob(curr_cost, new_cost):
+                curr_permutation = new_permutation
+                curr_cost = new_cost
+
+            self.temp *= self.rate 
+
+    def acceptance_prob(self, curr_cost, new_cost):
+        # calculates the acceptance probability 
+        return np.exp(np.abs(curr_cost - new_cost) / self.temp)
+
+    @staticmethod
+    def create_neighbour_path(curr_permutation, visualize=False):
+        # swaps two randomly chosen nodes 
+        idx_1 = np.random.randint(len(curr_permutation))
+        idx_2 = np.random.randint(len(curr_permutation))
+
+        while (idx_1 == idx_2): 
+            idx_2 = np.random.randint(len(curr_permutation))
+
+        new_permutation = curr_permutation.copy()
+        new_permutation[[idx_1, idx_2]] = new_permutation[[idx_2, idx_1]]
+
+        return new_permutation
+
+    @staticmethod
+    def Euclidean(coord1, coord2):
+        return np.linalg.norm(coord1 - coord2)
+
+    @classmethod
+    def cost(cls, permutation): 
+        # calculates the cost of a given permutation
+        # uses l2 norm (Euclidean) as the distance function
+        dist = 0
+        for i in range(len(permutation)-1):
+            dist += cls.Euclidean(permutation[i], permutation[i+1])
+        dist += cls.Euclidean(permutation[-1], permutation[0])
+        return dist 
