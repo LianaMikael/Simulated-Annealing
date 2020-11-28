@@ -7,7 +7,7 @@ flags.DEFINE_integer('width', 10, 'width of the map')
 flags.DEFINE_integer('height', 5, 'height of the map')
 flags.DEFINE_integer('nodes_num', 20, 'number of nodes on the map')
 flags.DEFINE_float('temp', 100, 'initial temperature')
-flags.DEFINE_float('temp_rate', 0.99, 'rate at which to decrease the temperature')
+flags.DEFINE_float('temp_rate', 0.998, 'rate at which to decrease the temperature')
 flags.DEFINE_integer('max_iter', 4000, 'maximum number of iterations to anneal')
 
 def main(_):

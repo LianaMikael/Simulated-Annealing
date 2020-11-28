@@ -106,10 +106,8 @@ class SimulatedAnnealing:
 
     def update_animation(self, i):
         self.history[i][0].visualize(self.history[i][1], self.history[i][2])
-        return self.line
 
     def animate(self):
         fig = plt.figure()
-        self.line, = plt.plot([], [])
         self.animator = animation.FuncAnimation(fig, self.update_animation, frames = len(self.history), interval=50)
         self.animator.save('TSP.mp4',  writer = 'ffmpeg')
