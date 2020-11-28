@@ -1,6 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
-
+from matplotlib import animation 
+import copy
 class Map:
     # creates a random map of cities
     # the first node is assumed to be the origin
@@ -14,6 +15,7 @@ class Map:
         self.y_nodes = np.random.rand(self.nodes_num,1) * self.height
 
     def visualize(self, cost=None, temp=None, show_path=True):
+        plt.clf()
         plt.title('Map')
         plt.xlim(0,self.width)
         plt.ylim(0,self.height)
@@ -32,7 +34,7 @@ class Map:
         plt.plot(self.x_nodes[0], self.y_nodes[0], 'o', color='r')
         plt.plot(self.x_nodes[1:], self.y_nodes[1:], '.')
 
-        plt.show()
+        #plt.show()
     
 class SimulatedAnnealing:
     def __init__(self, TSP_map, temp, rate, max_iter):
@@ -40,10 +42,10 @@ class SimulatedAnnealing:
         self.temp = temp
         self.rate = rate
         self.max_iter = max_iter 
+        self.history = None
 
     def anneal(self):
         curr_permutation = np.hstack([self.map.x_nodes, self.map.y_nodes])
-        costs = []
         candidate_maps = []
         curr_cost = self.cost(curr_permutation)
 
@@ -64,13 +66,11 @@ class SimulatedAnnealing:
                 self.map.x_nodes = new_permutation[:,0]
                 self.map.y_nodes = new_permutation[:,1]
 
-            self.map.visualize(curr_cost, self.temp)
-
-            costs.append(curr_cost)
-            candidate_maps.append(self.map)
+            #self.map.visualize(curr_cost, self.temp)
+            candidate_maps.append((copy.deepcopy(self.map), curr_cost, self.temp))
             self.temp *= self.rate 
 
-        return costs, candidate_maps
+        self.history = candidate_maps
 
     def acceptance_prob(self, curr_cost, new_cost):
         # calculates the acceptance probability 
@@ -103,3 +103,13 @@ class SimulatedAnnealing:
             dist += cls.Euclidean(permutation[i], permutation[i+1])
         dist += cls.Euclidean(permutation[-1], permutation[0])
         return dist 
+
+    def update_animation(self, i):
+        self.history[i][0].visualize(self.history[i][1], self.history[i][2])
+        return self.line
+
+    def animate(self):
+        fig = plt.figure()
+        self.line, = plt.plot([], [])
+        self.animator = animation.FuncAnimation(fig, self.update_animation, frames = len(self.history), interval=50)
+        self.animator.save('TSP.mp4',  writer = 'ffmpeg')
