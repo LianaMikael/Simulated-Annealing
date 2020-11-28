@@ -2,6 +2,8 @@
 
 In this project, I implement the Simulated Annealing algorithm Travelling Salesman Problem (TSP) and explore whether clustering can help to improve the solution. 
 
+![](https://github.com/LianaMikael/Simulated-Annealing/blob/master/TSP.gif)
+
 ## Travelling Salesman Problem
 
 Suppose we wish to travel to a set of cities and return to the original city. Given only the locations of those cities (and therefore, distances between each pair),the goal is to find the shortest path to visit each of them once and return back. 
