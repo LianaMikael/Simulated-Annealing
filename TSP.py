@@ -6,15 +6,19 @@ class Map:
     # creates a random map of cities
     # the first node is assumed to be the origin
     # the order of nodes assumes the initial randomly chosen path 
-    def __init__(self, width, height, nodes_num):
+    def __init__(self, width, height, nodes_num, x_nodes=None, y_nodes=None):
         self.width = width
         self.height = height
         self.nodes_num = nodes_num 
 
-        self.x_nodes = np.random.rand(self.nodes_num,1) * self.width
-        self.y_nodes = np.random.rand(self.nodes_num,1) * self.height
+        if x_nodes is not None and y_nodes is not None:
+            self.x_nodes = x_nodes
+            self.y_nodes = y_nodes
+        else:
+            self.x_nodes = np.random.rand(self.nodes_num,1) * self.width
+            self.y_nodes = np.random.rand(self.nodes_num,1) * self.height
 
-    def visualize(self, cost=None, temp=None, show_path=True):
+    def visualize(self, cost=None, temp=None, show_path=True, show_each=False):
         plt.clf()
         plt.title('Map')
         plt.xlim(0,self.width)
@@ -34,7 +38,8 @@ class Map:
         plt.plot(self.x_nodes[0], self.y_nodes[0], 'o', color='r')
         plt.plot(self.x_nodes[1:], self.y_nodes[1:], '.')
 
-        #plt.show()
+        if show_each:
+            plt.show()
     
 class SimulatedAnnealing:
     def __init__(self, TSP_map, temp, rate, max_iter):
@@ -107,7 +112,7 @@ class SimulatedAnnealing:
     def update_animation(self, i):
         self.history[i][0].visualize(self.history[i][1], self.history[i][2])
 
-    def animate(self):
+    def animate(self, name):
         fig = plt.figure()
-        self.animator = animation.FuncAnimation(fig, self.update_animation, frames = len(self.history), interval=50)
-        self.animator.save('TSP.mp4',  writer = 'ffmpeg')
+        self.animator = animation.FuncAnimation(fig, self.update_animation, frames = len(self.history), interval=10)
+        self.animator.save(name,  writer = 'ffmpeg')
