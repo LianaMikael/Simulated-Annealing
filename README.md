@@ -2,7 +2,7 @@
 
 In this project, I implement the Simulated Annealing algorithm for the Travelling Salesman Problem (TSP) and explore whether clustering can help to improve the solution. 
 
-![](https://github.com/LianaMikael/Simulated-Annealing/blob/master/TSP.gif)
+![](https://github.com/LianaMikael/Simulated-Annealing/blob/master/outputs/whole_map.gif)
 
 ## Travelling Salesman Problem
 
@@ -44,10 +44,6 @@ Final output obtained:
 
 ![](https://github.com/LianaMikael/Simulated-Annealing/blob/master/outputs/cluster_map.png)
 
-For comparison, we perform Simulated Annealing for the whole map at once:
-
-![](https://github.com/LianaMikael/Simulated-Annealing/blob/master/outputs/whole_map.gif)
-
-The figure on the left shows costs for the case without clustering and the figure on the right shows costs with clustering:
+For comparison, the algorithm procedure without clustering is shown at the beginning. The first figure shows costs for the case without clustering and the second figure shows costs with clustering:
 
 ![](https://github.com/LianaMikael/Simulated-Annealing/blob/master/outputs/costs.png) ![](https://github.com/LianaMikael/Simulated-Annealing/blob/master/outputs/cluster_costs.png)
